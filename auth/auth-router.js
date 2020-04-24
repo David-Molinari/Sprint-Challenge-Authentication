@@ -14,7 +14,7 @@ router.post('/register', (req, res) => {
 
   if (user.username != null && user.password != null) {
     Users.add(user)
-      .then(saved => {
+      .then(() => {
         res.status(201).json( {message: "User created successfully"});
       })
       .catch(error => {
