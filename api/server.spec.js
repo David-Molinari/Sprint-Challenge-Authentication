@@ -4,45 +4,59 @@ const server = require("./server.js");
 const db = require("../database/dbConfig.js");
 
 describe("POST /api/auth/register", function () {
-    beforeEach(async () => {
-        await db("users").truncate(); // empty the table and reset the id back to 1
-    });
-
-    it("return 201 on success", function () {
-    return request(server)
-        .post("/api/auth/register")
-        .send({ username: "test", password: "test" })
-        .then(res => {
-        expect(res.status).toBe(201);
-        });
-    });
-
-    it('should return a message saying "User created successfully"', function () {
-        return request(server)
-        .post("/api/auth/register")
-        .send({ username: "test", password: "test" })
-        .then(res => {
-            expect(res.body.message).toBe("User created successfully");
-        });
-    });
-});
-
-describe("POST /api/auth/login", function () {
-    it("return 500 on no credentials", function () {
-        return request(server)
-            .post("/api/auth/login")
-            .send({})
+    it("return 500 on failure", async function () {
+        await request(server)
+            .post("/api/auth/register")
+            .send({ username: "test", password: "test" })
             .then(res => {
             expect(res.status).toBe(500);
             });
     });
 
-    it('should return a message saying "invalid credentials"', function () {
+    it('return "error: please add valid user and password" on failure', function () {
+        return request(server)
+            .post("/api/auth/register")
+            .send({ password: "testabcdefg" })
+            .then(res => {
+            expect(res.body.message).toBe("error: please add valid user and password");
+            });
+        });
+});
+
+describe("POST /api/auth/login", function () {
+    it("return 200 on valid credentials", function () {
         return request(server)
             .post("/api/auth/login")
-            .send({})
+            .send({ username: "test", password: "test" })
             .then(res => {
-            expect(res.body.message).toBe("invalid credentials");
+            expect(res.status).toBe(200);
+            });
+    });
+
+    it('return "Welcome!" on valid credentials', function () {
+        return request(server)
+            .post("/api/auth/login")
+            .send({ username: "test", password: "test" })
+            .then(res => {
+            expect(res.body.message).toBe("Welcome!");
+        });
+    });
+});
+
+describe("POST /api/jokes", function () {
+    it("return 500 on error", function () {
+        return request(server)
+            .get("/api/jokes")
+            .then(res => {
+            expect(res.status).toBe(401);
+            });
+    });
+
+    it('should return a message saying "Error Fetching Jokes"', function () {
+        return request(server)
+            .get("/api/jokes")
+            .then(res => {
+            expect(res.body.you).toBe("shall not pass!");
         });
     });
 });

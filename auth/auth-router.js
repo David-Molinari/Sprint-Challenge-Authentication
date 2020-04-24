@@ -19,7 +19,7 @@ router.post('/register', (req, res) => {
       })
       .catch(error => {
         console.log(error);
-        res.status(500).json({ errorMessage: error.message });
+        res.status(500).json({ message: "error: please add valid user and password"  });
       });
   } else {
     res.status(500).json({ message: "error: please add valid user and password" });
