@@ -25,53 +25,24 @@ describe("POST /api/auth/register", function () {
             expect(res.body.message).toBe("User created successfully");
         });
     });
-
-    it("add the user to the db", async function () {
-        const userName = "test";
-
-        const existing = await db("users").where({ username: userName });
-        expect(existing).toHaveLength(0);
-
-        await request(server)
-            .post("/api/auth/register")
-            .send({ username: userName, password: "test" })
-            .then(res => {
-            expect(res.body.message).toBe("User created successfully");
-            });
-        await request(server)
-            .post("/api/auth/register")
-            .send({ username: "test2", password: "test2" })
-            .then(res => {
-            expect(res.body.message).toBe("User created successfully");
-            });
-
-        const inserted = await db("users"); //.where({ name: hobbitName });
-        expect(inserted).toHaveLength(2);
-    });
 });
 
-// describe("POST /api/auth/login", function () {
-//     request(server)
-//         .post("/api/auth/register")
-//         .send({ username: "test", password: "test" })
-//         .then(res => {
-//         expect(res.body.message).toBe("User created successfully");
-//         });
-//     it("return 201 on success", function () {
-//     return request(server)
-//         .post("/api/auth/login")
-//         .send({ username: "test", password: "test" })
-//         .then(res => {
-//         expect(res.status).toBe(201);
-//         });
-//     });
+describe("POST /api/auth/login", function () {
+    it("return 500 on no credentials", function () {
+        return request(server)
+            .post("/api/auth/login")
+            .send({})
+            .then(res => {
+            expect(res.status).toBe(500);
+            });
+    });
 
-//     it('should return a message saying "Welcome!"', function () {
-//         return request(server)
-//         .post("/api/auth/login")
-//         .send({ username: "test", password: "test" })
-//         .then(res => {
-//             expect(res.body.message).toBe("Welcome!");
-//         });
-//     });
-// });
+    it('should return a message saying "invalid credentials"', function () {
+        return request(server)
+            .post("/api/auth/login")
+            .send({})
+            .then(res => {
+            expect(res.body.message).toBe("invalid credentials");
+        });
+    });
+});
